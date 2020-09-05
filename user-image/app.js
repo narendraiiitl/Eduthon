@@ -1,11 +1,16 @@
+const autoSave = require('./autosave')
+
 const express = require('express');
 const expressWs = require('express-ws');
 const cors = require('cors');
 const pty = require('node-pty');
+const fs = require('fs');
+const bodyParser = require('body-parser')
 
 const app = express();
 
 app.use(cors())
+app.use(bodyParser.json());
 
 expressWs(app);
 
@@ -13,8 +18,9 @@ let terminals = {}, logs = {};
 app.post('/terminals', (req, res) => {
     const env = Object.assign({}, process.env);
     env['COLORTERM'] = 'truecolor';
-
-    const userID = 2; // UserID of User
+    env['HOME'] = `/home/${env['USER']}`
+    const uid = parseInt(process.env.UID) || 2; // UID of User
+    const gid = parseInt(process.env.GID) || 2; // GID of User
 
     const cols = parseInt(req.query.cols),
         rows = parseInt(req.query.rows),
@@ -22,10 +28,11 @@ app.post('/terminals', (req, res) => {
             name: 'xterm-256color',
             cols: cols || 80,
             rows: rows || 24,
-            cwd: env.PWD,
+            cwd: env['HOME'],
             env: env,
             encoding: null,
-            uid: userID
+            uid,
+            gid: gid
         });
 
     console.log('Created terminal with PID: ' + term.pid);
@@ -49,10 +56,42 @@ app.post('/terminals/:pid/size', (req, res) => {
     res.end();
 });
 
+app.post('/file/:path(*)', (req, res)=>{
+    const data = req.body.data;
+    const dataBuf = new Buffer.from(data, 'base64');
+    const dataDecoded = dataBuf.toString() + "\n\r";
+
+    // Use /home/user as cwd
+    if(req.params.path[0]!=='/' && req.params.path[0]!=='~')
+        req.params.path = "/home/user/" + req.params.path;
+    // Absolute path
+    const path = require('path').resolve(req.params.path)
+
+    if(!path.startsWith("/home/user/")){
+        // Writing to directories other than /home/user not allowed
+        res.statusCode = 400;
+        res.json({status: "Writing to directories other than /home/user not allowed"});
+        res.end();
+    } else {
+        // Write file
+        fs.writeFile(path, dataDecoded, (err => {
+            if (err) {
+                res.statusCode = 400;
+                res.json({status: "Invalid file path or operation not permitted"});
+                res.end();
+            } else {
+                res.json({status: "success"});
+                res.end();
+            }
+        }))
+    }
+})
+
 app.ws('/terminals/:pid', function (ws, req) {
     let term = terminals[parseInt(req.params.pid)];
     console.log('Connected to terminal ' + term.pid);
-    ws.send(logs[term.pid]);
+    if(ws.readyState===1)
+        ws.send(logs[term.pid]);
 
     // binary message buffering
     function bufferUtf8(socket, timeout) {
@@ -64,7 +103,8 @@ app.ws('/terminals/:pid', function (ws, req) {
             length += data.length;
             if (!sender) {
                 sender = setTimeout(() => {
-                    socket.send(Buffer.concat(buffer, length));
+                    if(socket.readyState===1)
+                        socket.send(Buffer.concat(buffer, length));
                     buffer = [];
                     sender = null;
                     length = 0;
@@ -73,6 +113,12 @@ app.ws('/terminals/:pid', function (ws, req) {
         };
     }
     const send = bufferUtf8(ws, 5);
+
+
+    term.on('exit', ()=>{
+        // send(new Buffer.from("Disconnected from console"))
+        ws.close();
+    })
 
     term.on('data', function(data) {
         try {
@@ -97,3 +143,9 @@ const port = process.env.PORT || 8888
 app.listen(port, '0.0.0.0', ()=>{
     console.log(`Listening at 0.0.0.0:${port}`)
 })
+
+const intervalToSave = 5000;
+
+setInterval(()=>{
+    autoSave(process.env.PROJECT_ID)
+}, intervalToSave)
