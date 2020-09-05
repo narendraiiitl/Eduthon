@@ -3,6 +3,10 @@
 
 We are planning to build an realtime code collaboration platform, which can be used as an educative aid will conducting online practical sessions.
 
+![alt text](/assets/screencapture-localhost-3000-login-2020-09-05-15_15_42.png "Image Here")
+
+
+
 ### What lead us to develope this platform ?
 
 This pandemic has hit us hard, but with time everthing is statring to come online so is the case with our colleges.
