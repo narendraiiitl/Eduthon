@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { findChildParentId, isNodeFolder, generateUUID } from '../utils/utils';
 import EditorData from "../utils/editorData"
-
+import axios from "axios"
+import cookie from 'react-cookies'
 
 const GlobalContext = React.createContext()
 
@@ -18,7 +19,12 @@ class GlobalProvider extends Component {
       collectionId: null,
       username: null,
       selectedId: null,
-      activeKey: null
+      activeKey: null,
+      ws: null,
+      termFileModel: null,
+      termFileName: null,
+      roomUrl: ''
+
 
     }
   }
@@ -32,16 +38,80 @@ class GlobalProvider extends Component {
   dispose = () => {
 
     this.setState({
-      editors: null,
+      editors: [],
       activeEditor: null,
       modelService: null,
       collectionId: null,
       username: null,
       rtModel: null,
       selectedId: null,
-      activeKey: null 
+      activeKey: null,
+      termFileModel: null,
+      termFileName: null
     })
   }
+
+
+  setWS = (ws, roomUrl) => {
+    this.setState({ ws: ws, roomUrl: roomUrl })
+  }
+
+  setTerm = (model, fileName) => {
+    this.setState({ termFileModel: model, termFileName: fileName })
+    console.log(this.state)
+  }
+
+  runTerminal = () => {
+    console.log(this.state)
+
+    let data = this.state.termFileModel.root().get('content').value()
+    data = btoa(data)
+
+    const type = this.state.termFileName.split(".")[1]
+    console.log(type)
+    axios
+      .post(
+        `${this.state.roomUrl}/file?token=${cookie.load('jwt')}`,
+        { data: data, fileName: this.state.termFileName },
+        { "Content-Type": "application/json" }
+      )
+      .then((res) => {
+        console.log(res.data);
+
+
+
+        this.state.ws.send("\x03"); // Simulate ^C to terminate previously running command if any
+        this.state.ws.send("clear\n"); // Clear Console
+
+
+
+        if (type === 'py') {
+
+          this.state.ws.send(`python3 ${this.state.termFileName}\n`);
+
+        } else if (type === 'js') {
+
+          this.state.ws.send(`node ${this.state.termFileName}\n`)
+
+        } else if (type === 'c') {
+
+          this.state.ws.send(`gcc ${this.state.termFileName} && ./a.out\n`)
+
+        } else if (type === 'cpp') {
+
+          this.state.ws.send(`g++ ${this.state.termFileName} && ./a.out\n`)
+
+        } else {
+          this.state.ws.send('echo "FileNotSupported" ')
+        }
+
+      })
+      .catch((e) => {
+        console.log(e, 'term error');
+      });
+
+  }
+
 
   getStateFromContext = () => {
     return { editors: this.state.editors, activeEditor: this.state.activeEditor }
@@ -93,7 +163,7 @@ class GlobalProvider extends Component {
         return this.openModel(uuid);
       }).then(model => {
         this.createEditor(uuid, model, false);
-        resolve({id: uuid})
+        resolve({ id: uuid })
       });
     })
   }
@@ -102,12 +172,12 @@ class GlobalProvider extends Component {
   CreateFolder(name, parentId) {
     const newId = generateUUID()
     const nodes = this.getNodes();
-    nodes.set(newId, {name: name, children: []});
+    nodes.set(newId, { name: name, children: [] });
     nodes.elementAt([parentId, 'children']).push(newId);
   }
 
 
-  isFileOpen= (id) => {
+  isFileOpen = (id) => {
     return this.state.editors.some(editor => {
       return editor.modelId === id && editor.historical === false;
     });
@@ -117,26 +187,26 @@ class GlobalProvider extends Component {
     if (!this.isFileOpen(id)) {
       this.openModel(id).then(model => {
         this.createEditor(id, model, false);
-        this.setState({activeKey : id})
+        this.setState({ activeKey: id })
       });
     }
   }
-  
-  setActiveKey= (id) => {
-    this.setState({activeKey : id})
+
+  setActiveKey = (id) => {
+    this.setState({ activeKey: id })
   }
 
-  tabRemove= (id) => {
+  tabRemove = (id) => {
 
     let editors = this.state.editors;
     editors = editors.filter(editor => editor.modelId !== id);
-    this.setState({ activeKey : editors.length>0 ? editors[0].modelId : null , editors })
+    this.setState({ activeKey: editors.length > 0 ? editors[0].modelId : null, editors })
 
   }
-  
 
 
-// -----------------Tree---------------------
+
+  // -----------------Tree---------------------
 
   getTreeState = () => {
     return {
@@ -146,7 +216,7 @@ class GlobalProvider extends Component {
     };
   }
 
-  addNewNode = (type, nodeId) => {
+  addNewNode = (type, nodeId, fileName) => {
     console.log("1")
     const nodes = this.getNodes();
     console.log("2")
@@ -159,31 +229,31 @@ class GlobalProvider extends Component {
       parentFolderId = findChildParentId(nodes, nodeId);
     }
     console.log("5")
-    let name = "main.py"
-    if(type === "file"){
-      this.CreateFile(name , parentFolderId).then((data)=>{
+    let name = fileName
+    if (type === "file") {
+      this.CreateFile(name, parentFolderId).then((data) => {
         console.log(data.id)
         this.openFile(data.id)
         this.setActiveKey(data.id)
       })
-    }else{
-      this.CreateFolder("folderPratik", parentFolderId)
+    } else {
+      this.CreateFolder(fileName, parentFolderId)
     }
   }
 
 
-  setSelectedId= (id) => {
+  setSelectedId = (id) => {
     console.log(id)
 
-    this.setState({ selectedId : id })
-    console.log(this.state.selectedId)  
+    this.setState({ selectedId: id })
+    console.log(this.state.selectedId)
   }
 
   markFolderForDelete = (id) => {
     this.setState({ folderMarkedForDeletion: id })
   }
 
-  deleteNode = (id) => {  
+  deleteNode = (id) => {
     const nodes = this.getNodes();
     const parent = findChildParentId(nodes, id);
 
@@ -196,7 +266,7 @@ class GlobalProvider extends Component {
     nodes.remove(id);
 
     if (this.state.selectedId === id) {
-      this.setState({selectedId: null})
+      this.setState({ selectedId: null })
     }
   }
 
@@ -212,10 +282,10 @@ class GlobalProvider extends Component {
 
   render() {
     const { children } = this.props
-    const { rtModel, editors, activeEditor, modelService, collectionId, username,selectedId, activeKey } = this.state
+    const { rtModel, editors, activeEditor, selectedId, activeKey, termFileModel, ws, termFileName, roomUrl } = this.state
     const { dispose, setInitStates, getNodes, getNode, getTreeState, addNewNode, markFolderForDelete,
-             deleteNode, createEditor, CreateFile, getStateFromContext,setSelectedId, openFile,
-             setActiveKey, tabRemove } = this
+      deleteNode, createEditor, CreateFile, getStateFromContext, setSelectedId, openFile,
+      setActiveKey, tabRemove, setWS, setTerm, runTerminal } = this
 
     return (<GlobalContext.Provider value={
       {
@@ -232,15 +302,15 @@ class GlobalProvider extends Component {
         editors,
         activeEditor,
         createEditor,
-        dispose,
         getStateFromContext,
-        setInitStates,
         CreateFile,
         setSelectedId,
         openFile,
         activeKey,
         setActiveKey,
-        tabRemove
+        tabRemove,
+        setWS, runTerminal,
+        setTerm, termFileModel, ws, termFileName, roomUrl
       }
     } > {children} </GlobalContext.Provider>)
   }
