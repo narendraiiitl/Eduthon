@@ -2,13 +2,12 @@ import React from 'react'
 import axios from 'axios'
 import cookie from 'react-cookies'
 import RoomCardComponent from '../../components/roomCard/roomCard.component'
-import { Card, Row, Col, Button, Space, Input, Modal, notification } from 'antd';
+import { Row, Col, Button, Space, Input, Modal, notification, Typography } from 'antd';
 import { PlusOutlined, CodeOutlined } from '@ant-design/icons';
 import qs from 'querystring'
 import { withRouter } from 'react-router-dom'
 import validator from 'validator';
 
-const { Meta } = Card;
 class RoomPage extends React.Component {
     constructor(props) {
         super(props)
@@ -69,7 +68,8 @@ class RoomPage extends React.Component {
                     {
                         roomName: data.roomName,
                         inviteCode: data.inviteCode,
-                        roomId: data.roomId
+                        roomId: data.roomId,
+                        roomURL: data.roomURL
                     }
                 })
             })
@@ -133,7 +133,8 @@ class RoomPage extends React.Component {
                         {
                             roomName: data.roomName,
                             inviteCode: data.inviteCode,
-                            roomId: data.roomId
+                            roomId: data.roomId,
+                            roomURL: data.roomURL
                         }
                     })
                 })
@@ -167,8 +168,11 @@ class RoomPage extends React.Component {
     render() {
         const rooms = this.state.rooms
         return (
-            <>
-                <br /><br />
+            <div style={{padding: '3rem'}}>
+
+                <Typography.Title style={{marginLeft: '1rem'}}>Rooms</Typography.Title>
+
+                <br/><br/>
 
                 <Space size={50}>
                     <Button onClick={() => { this.setState({ visible: true }) }} type='primary' size='large' icon={<PlusOutlined />}>Create Room</Button>
@@ -185,7 +189,8 @@ class RoomPage extends React.Component {
                 </Space>
 
                 <br /><br />
-                <Row  align="middle" gutter={[,24]}>
+                <br /><br />
+                <Row  >
                     {
                         rooms.map((x) => (
                             <Col key={x.inviteCode} span={6} ><RoomCardComponent
@@ -193,6 +198,7 @@ class RoomPage extends React.Component {
                                 inviteCode={x.inviteCode}
                                 isAdmin={x.isHost}
                                 roomId={x.roomId}
+                                roomURL={x.roomURL}
                             />
                             </Col>
                         ))
@@ -210,7 +216,7 @@ class RoomPage extends React.Component {
                 >
                     <Input value={this.state.roomName} onChange={this.changeRoomName} placeholder="Room Name" />
                 </Modal>
-            </>)
+            </div>)
     }
 }
 

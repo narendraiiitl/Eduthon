@@ -4,13 +4,13 @@ import { Convergence } from "@convergence/convergence";
 import SplitPane from 'react-split-pane';
 import EditorGoupComponent from "./editorGroup.component"
 import ChatComponent from '../../components/chatComponent/chat.component'
-import { DeliveredProcedureOutlined } from '@ant-design/icons';
 import { Spin,Col,Row } from 'antd'
 import TerminalComponent from '../../components/terminalComponent/terminal.component'
 import FileManagerComponent from "./fileManager.component"
 import ParticipantsList from '../../components/participantsList/participantsList.component'
 import RoomInfo from '../../components/roomInfo/roomInfo.component'
 import { withRouter } from 'react-router-dom';
+import VoiceChatMainComponent from "../../components/voiceChannel/voiceChatMain.component"
 
 class WorkspacePage extends React.Component {
 
@@ -19,26 +19,24 @@ class WorkspacePage extends React.Component {
   constructor(props) {
     super(props)
     // Temp
-    this.room = { name: "temproom", id: "2233" }
-    this.inviteCode = '84f2d307-b867-410c-a28e-a49fbd379112'
+    this.room = { name: this.props.history.location.state.roomName, id: this.props.history.location.state.roomId }
+    this.inviteCode = this.props.history.location.state.inviteCode
     this.domainUrl = process.env.REACT_APP_DOMAIN_URL;
     this.state = {
       domain: null,
       projectData: null,
       isLoading: true,
-      roomUrl: 'rooms.localhost/84f2d307-b867-410c-a28e-a49fbd379112'
+      roomURL: this.props.history.location.state.roomURL
     }
 
   }
 
-  componentWillMount() {
-    console.log('DESTORY')
-  }
 
   componentDidMount() {
-    console.log(this.props)
-    const { user, domain } = this.context
-    console.log(user)
+    // const data = this.props.history.location.state
+    // console.log(this.props)
+    const { user} = this.context
+    // console.log(user)
     this.tryAutoLogin(user)
   }
 
@@ -138,19 +136,22 @@ class WorkspacePage extends React.Component {
     return (<div>
       {
         loading ?
-          <div>    <Spin size="large" />
+          <div  >    
+            
+            <Spin size="large" />
           </div> :
           <div>
             <SplitPane
               split="vertical"
               minSize="70vw"
+              style={{position: 'relative'}}
             >
               <div>
                 <Row>
-                  <Col span={6} style={{borderRight: "2px solid #505050"}} >
+                  <Col span={5} style={{borderRight: "2px solid #505050"}} >
                     <FileManagerComponent rtModel={this.context.projectData.projectModel} />
                   </Col>
-                  <Col span={18} style={{    height: "calc(100vh - 64px)"
+                  <Col span={19} style={{    height: "calc(100vh - 64px)"
 }}>
                     <EditorGoupComponent rtModel={this.context.projectData.projectModel} />
 
@@ -160,7 +161,8 @@ class WorkspacePage extends React.Component {
               <div>
                 <SplitPane
                   split='horizontal'
-                  minSize="40vh"
+                  minSize="47vh"
+                  allowResize={false}
                 >
                   <div>
                     <SplitPane allowResize={false} split="vertical" minSize="50%">
@@ -168,7 +170,7 @@ class WorkspacePage extends React.Component {
                       <RoomInfo roomName={this.room.name} inviteCode={this.inviteCode} />
                     </SplitPane>
                   </div>
-                  <div><TerminalComponent roomUrl={this.state.roomUrl} /></div>
+                  <div><TerminalComponent roomUrl={this.state.roomURL} /></div>
 
                 </SplitPane>
               </div>
