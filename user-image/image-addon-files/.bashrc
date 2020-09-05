@@ -704,7 +704,7 @@ echo "\[\e[1;31m\]*\[\e[0m\]"; fi) ${DARKGREY}] "; fi )
 }
 PROMPT_COMMAND='__setprompt'
 
-GREEN="\033[0;32m"
+GREEN="\033[1;3;32m"
 
 cd ~
 echo -e "${GREEN}Connected to execute.it console!${NOCOLOR} "
