@@ -23,6 +23,8 @@ while this way is OK'ish for theory lecutres but it becomes really hard to coupe
   * Now they can create files and start coding in realtime using our online code editor, including syntax highlighting and all other features.
   * Each file can be modified by multiple users at same time, and changes will be reflected to all the users. ( Google Doc like but with an IDE )
   * A dedicated terminal will be accessible to each user inside same linux container.
+  * Student and Teachers will be able communicate with each other thorugh text and voice chat.
+  * As all communatications will happen through websocktes, therefore consuming less bandwidth than current online video sessions. 
   
 
 
