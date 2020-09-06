@@ -7,7 +7,7 @@
 
 > Youtube Video Link: https://youtu.be/xq-h6HmpOeE
 
-We are planning to build an realtime code collaboration platform, which can be used as an educative aid will conducting online practical sessions.
+We are planning to build an realtime code collaboration platform, which can be used as an educative aid while conducting online practical sessions.
 
 ![alt text](/assets/screencapture-executeit-ml-login-2020-09-06-04_35_18.png "Login Screen")
 
@@ -16,21 +16,18 @@ We are planning to build an realtime code collaboration platform, which can be u
 ![alt text](/assets/Screenshot_20200906_095424.png "Workspace Screen")
 
 
-
-
-
 ### What lead us to develope this platform ?
 
-This pandemic has hit us hard, but with time everthing is statring to come online so is the case with our colleges.
+This pandemic has hit us hard, but with time everthing is starting to come online so is the case with our colleges.
 
-All lectures and CODING PRACTICALS are being conducted online, mostly thourgh PPT's and screen sharing,
+All lectures and CODING PRACTICALS are being conducted online, mostly through PPTs and screen sharing,
 while this way is OK'ish for theory lecutres but it becomes really hard to coupe up with online PRACTICALS.
 
 ### Some Caveats of current way of online PRACTICAL sessions :
   * All the students does not have same coding environment and some of them don't even have linux installed. 
   * If the student want to share code or even if teacher wants to share a code, they need to send file which then needs to be run locally,hence consuming more time.
   * Debugging and doubt solving in a code is really cumbersome and teacher cannot help student in realtime.
-  * Poor network connection is the biggest hurdule of all due to which quality of share maybe bad and code may not be visible clearly.
+  * Poor network connection is the biggest hurdle of all due to which quality of share maybe bad and code may not be visible clearly.
   
 ### What we propose ? 
   * On our platform teacher will create a room, will share invite link.
@@ -41,6 +38,8 @@ while this way is OK'ish for theory lecutres but it becomes really hard to coupe
   * A dedicated terminal will be accessible to each user inside same linux container.
   * Student and Teachers will be able communicate with each other thorugh text and voice chat.
   * As all communatications will happen through websocktes, therefore consuming less bandwidth than current online video sessions. 
+  
+![alt text](/assets/eduthon.png "Flow")
   
  ### Installation
   This project uses docker. So ensure that you have Docker and Docker Compose installed on your system For installation instructions refer: https://docs.docker.com/install/
