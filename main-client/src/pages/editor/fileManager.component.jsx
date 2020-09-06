@@ -2,7 +2,7 @@ import React from "react"
 import GlobalContext from '../../context/GlobalContext'
 import { isNodeFolder } from '../../utils/utils';
 import { Button, Popconfirm, message, Tree,Space, Input, Modal } from 'antd';
-import { QuestionCircleOutlined, FolderAddOutlined, FileAddOutlined,DeleteOutlined, CaretRightOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, FileAddOutlined,DeleteOutlined, CaretRightOutlined } from "@ant-design/icons";
 const { DirectoryTree } = Tree;
 
 export default class FileManagerComponent extends React.Component {
@@ -144,7 +144,7 @@ export default class FileManagerComponent extends React.Component {
                         {/* <Button size="small"  icon={<FolderAddOutlined/>} type="primary" onClick={_=>this.setState({visibleNewFolderModal: true})} > Folder </Button> */}
                         <Popconfirm disabled={!this.context.selectedId || this.context.selectedId === 'temproom'} placement="top" title="Are you sure？"
                             icon={<QuestionCircleOutlined style={{ color: "red" }} />} onConfirm={this.handleDelete} >
-                            <Button size="small"  icon={<DeleteOutlined />} type="primary" danger disabled={!this.context.selectedId || this.context.selectedId === 'temproom'} > Delete </Button>
+                            <Button size="small"  icon={<DeleteOutlined />} type="primary" danger disabled={!this.context.selectedId || this.context.selectedId === `${this.props.roomName}` } > Delete </Button>
                         </Popconfirm>
                         <Button size="small"  icon={<CaretRightOutlined />} type="primary" disabled={!this.context.activeKey || this.context.termFileName === null} onClick={this.context.runTerminal} >Run </Button>
 
