@@ -47,7 +47,7 @@ Also, make sure that you have port `80` and `3000` open on the host
   
 #### Building all docker files
  1. cd to`/user-image`directory and run `docker build . -t user-image` 
- 2. cd to `/main-server` and run `docker-compose -f docker-compose.dev.ymml build app`
+ 2. cd to `/main-server` and run `docker-compose -f docker-compose.dev.yml build app`
 
 #### Start the Servers
  1. cd to `/main-server` and run `docker-compose -f docker-compose.dev.yml up`. This will start traefik, convergence, mongo-db, and main-server
