@@ -14,7 +14,8 @@ app.use(bodyParser.json());
 
 expressWs(app);
 
-let terminals = {}, logs = {};
+let terminals = {},
+    logs = {};
 app.post('/terminals', (req, res) => {
     const env = Object.assign({}, process.env);
     env['COLORTERM'] = 'truecolor';
@@ -39,7 +40,7 @@ app.post('/terminals', (req, res) => {
     terminals[term.pid] = term;
     logs[term.pid] = ""
     term.on('data', function(data) {
-        logs[term.pid]+=data;
+        logs[term.pid] += data;
     });
     res.send(term.pid.toString());
     res.end();
@@ -56,41 +57,43 @@ app.post('/terminals/:pid/size', (req, res) => {
     res.end();
 });
 
-app.post('/file/:path(*)', (req, res)=>{
+app.post('/file', (req, res) => {
+
     const data = req.body.data;
+
     const dataBuf = new Buffer.from(data, 'base64');
     const dataDecoded = dataBuf.toString() + "\n\r";
 
     // Use /home/user as cwd
-    if(req.params.path[0]!=='/' && req.params.path[0]!=='~')
-        req.params.path = "/home/user/" + req.params.path;
+    if (req.body.fileName[0] !== '/' && req.body.fileName[0] !== '~')
+        req.body.fileName = "/home/user/" + req.body.fileName;
     // Absolute path
-    const path = require('path').resolve(req.params.path)
+    const path = require('path').resolve(req.body.fileName)
 
-    if(!path.startsWith("/home/user/")){
+    if (!path.startsWith("/home/user/")) {
         // Writing to directories other than /home/user not allowed
         res.statusCode = 400;
-        res.json({status: "Writing to directories other than /home/user not allowed"});
+        res.json({ status: "Writing to directories other than /home/user not allowed" });
         res.end();
     } else {
         // Write file
         fs.writeFile(path, dataDecoded, (err => {
             if (err) {
                 res.statusCode = 400;
-                res.json({status: "Invalid file path or operation not permitted"});
+                res.json({ status: "Invalid file path or operation not permitted" });
                 res.end();
             } else {
-                res.json({status: "success"});
+                res.json({ status: "success" });
                 res.end();
             }
         }))
     }
 })
 
-app.ws('/terminals/:pid', function (ws, req) {
+app.ws('/terminals/:pid', function(ws, req) {
     let term = terminals[parseInt(req.params.pid)];
     console.log('Connected to terminal ' + term.pid);
-    if(ws.readyState===1)
+    if (ws.readyState === 1)
         ws.send(logs[term.pid]);
 
     // binary message buffering
@@ -103,7 +106,7 @@ app.ws('/terminals/:pid', function (ws, req) {
             length += data.length;
             if (!sender) {
                 sender = setTimeout(() => {
-                    if(socket.readyState===1)
+                    if (socket.readyState === 1)
                         socket.send(Buffer.concat(buffer, length));
                     buffer = [];
                     sender = null;
@@ -115,7 +118,7 @@ app.ws('/terminals/:pid', function (ws, req) {
     const send = bufferUtf8(ws, 5);
 
 
-    term.on('exit', ()=>{
+    term.on('exit', () => {
         // send(new Buffer.from("Disconnected from console"))
         ws.close();
     })
@@ -128,9 +131,12 @@ app.ws('/terminals/:pid', function (ws, req) {
         }
     });
     ws.on('message', function(msg) {
-        term.write(msg);
+        if(msg==='e.x.e.p.i.n.g') {
+            ws.send("")
+        }else
+            term.write(msg);
     });
-    ws.on('close', function () {
+    ws.on('close', function() {
         term.kill();
         console.log('Closed terminal ' + term.pid);
         // Clean things up
@@ -140,12 +146,12 @@ app.ws('/terminals/:pid', function (ws, req) {
 });
 
 const port = process.env.PORT || 8888
-app.listen(port, '0.0.0.0', ()=>{
+app.listen(port, '0.0.0.0', () => {
     console.log(`Listening at 0.0.0.0:${port}`)
 })
 
-const intervalToSave = 5000;
+// const intervalToSave = 5000;
 
-setInterval(()=>{
-    autoSave(process.env.PROJECT_ID)
-}, intervalToSave)
+// setInterval(() => {
+//     autoSave(process.env.PROJECT_ID)
+// }, intervalToSave)
