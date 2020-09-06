@@ -13,7 +13,7 @@ We are planning to build an realtime code collaboration platform, which can be u
 
 ![alt text](/assets/screencapture-executeit-ml-rooms-2020-09-06-07_40_39.png "Rooms Screen")
 
-![alt text](/assets/screencapture-executeit-ml-workspace-2020-09-06-04_38_11.png "Workspace Screen")
+![alt text](/assets/Screenshot_20200906_095424.png "Workspace Screen")
 
 
 
