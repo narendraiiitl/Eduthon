@@ -1,9 +1,17 @@
 ## Eduthon
 # Realtime Code Collaboration Platform
 
+> This Platform is Deployed at https://executeit.ml
+
 We are planning to build an realtime code collaboration platform, which can be used as an educative aid will conducting online practical sessions.
 
-![alt text](/assets/screencapture-localhost-3000-login-2020-09-05-15_15_42.png "Image Here")
+![alt text](/assets/screencapture-executeit-ml-login-2020-09-06-04_35_18.png "Login Screen")
+
+![alt text](/assets/screencapture-executeit-ml-rooms-2020-09-06-07_40_39.png "Rooms Screen")
+
+![alt text](/assets/screencapture-executeit-ml-workspace-2020-09-06-04_38_11.png "Workspace Screen")
+
+
 
 
 
@@ -30,6 +38,23 @@ while this way is OK'ish for theory lecutres but it becomes really hard to coupe
   * Student and Teachers will be able communicate with each other thorugh text and voice chat.
   * As all communatications will happen through websocktes, therefore consuming less bandwidth than current online video sessions. 
   
+ ### Installation
+  This project uses docker. So ensure that you have Docker and Docker Compose installed on your system For installation instructions refer: https://docs.docker.com/install/
+Also make sure that you have port `80` and `3000` open on the host
+  
+#### Building all docker files
+ 1. cd to`/user-image`directory and run `docker build . -t user-image` 
+ 2. cd to `/main-server` and run `docker-compose -f docker-compose.dev.ymml build app`
+
+### Start the Servers
+ 1. cd to `/main-server` and run `docker-compose -f docker-compose.dev.ymml up`. This will start traefik, convergence, mongo-db and main-server
+ 2. Traefik will serve as reverse proxy to all the container through `http://localhost`
+
+### Start the React Client
+ 1. cd to `/main-client` and run `npm install`
+ 2. Then start the server by `npm start`. Please make sure that the client is hosted on port 3000 only beacause the port is added on google cloud console.
+ 
+ Now navigate to `http://localhost:3000` and start exploring our project
 
 
 
