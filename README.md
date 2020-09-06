@@ -1,6 +1,8 @@
 ## Eduthon
 # Realtime Code Collaboration Platform
 
+[![HitCount](http://hits.dwyl.com/AVC0706/Eduthon.svg)](http://hits.dwyl.com/AVC0706/Eduthon)
+
 > This Platform is Deployed at https://executeit.ml
 
 > Presentation Link: https://github.com/AVC0706/Eduthon/blob/master/assets/Tres-Comas.pdf
@@ -65,5 +67,13 @@ Also, make sure that you have port `80` and `3000` open on the host
  ### System Architecture
 
 ![alt text](/assets/System_Architecture.png "System Architecture")
+
+## Contributors
+* Pratik Daigavane [Github](https://github.com/pratikdaigavane) | [Linkedin](https://linkedin.com/in/pratikdaigavane) | [Portfolio](https://www.pratikdaigavane.me)
+
+* Prathamesh Shiralkar [Github](https://github.com/pnshiralkar) | [Linkedin](https://linkedin.com/in/pnshiralkar)
+
+* Atharv Chavan [Github](https://github.com/AVC0706) | [Linkedin](https://linkedin.com/in/AVC0706) | [Portfolio](https://www.atharvchavan.me)
+
 
  
