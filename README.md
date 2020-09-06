@@ -3,6 +3,10 @@
 
 > This Platform is Deployed at https://executeit.ml
 
+> Presentation Link: https://github.com/AVC0706/Eduthon/blob/master/assets/Tres-Comas.pdf
+
+> Youtube Video Link: https://youtu.be/xq-h6HmpOeE
+
 We are planning to build an realtime code collaboration platform, which can be used as an educative aid will conducting online practical sessions.
 
 ![alt text](/assets/screencapture-executeit-ml-login-2020-09-06-04_35_18.png "Login Screen")
@@ -46,16 +50,18 @@ Also make sure that you have port `80` and `3000` open on the host
  1. cd to`/user-image`directory and run `docker build . -t user-image` 
  2. cd to `/main-server` and run `docker-compose -f docker-compose.dev.ymml build app`
 
-### Start the Servers
+#### Start the Servers
  1. cd to `/main-server` and run `docker-compose -f docker-compose.dev.ymml up`. This will start traefik, convergence, mongo-db and main-server
  2. Traefik will serve as reverse proxy to all the container through `http://localhost`
 
-### Start the React Client
+#### Start the React Client
  1. cd to `/main-client` and run `npm install`
  2. Then start the server by `npm start`. Please make sure that the client is hosted on port 3000 only beacause the port is added on google cloud console.
  
  Now navigate to `http://localhost:3000` and start exploring our project
+ 
+ ### System Architecture
 
-
+![alt text](/assets/System_Architecture.png "System Architecture")
 
  
